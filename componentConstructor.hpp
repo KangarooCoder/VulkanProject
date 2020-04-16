@@ -45,20 +45,7 @@ private:
     VkInstance* createInstance() const;
     
     // DEBUG MESSENGER CREATION FUNCTIONS
-    inline VkDebugUtilsMessengerEXT* setupDebugMessenger(VkInstance* const instance) const
-    {
-        if (!enableValidationLayers) return nullptr;
-        
-        VkDebugUtilsMessengerEXT* newDebugMessenger = new VkDebugUtilsMessengerEXT;
-        
-        VkDebugUtilsMessengerCreateInfoEXT createInfo {};
-        createInfo = generateDebugMessengerCreateInfo();
-        
-        if (vkCreateDebugUtilsMessengerEXT(*instance, &createInfo, nullptr, newDebugMessenger) != VK_SUCCESS)
-            throw std::runtime_error("Failed to setup debug messenger!");
-        
-        return newDebugMessenger;
-    };
+    VkDebugUtilsMessengerEXT* setupDebugMessenger(VkInstance* const instance) const;
     
     VkDebugUtilsMessengerCreateInfoEXT generateDebugMessengerCreateInfo() const;
     
