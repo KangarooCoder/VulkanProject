@@ -18,6 +18,9 @@
 #include <stdio.h>
 #include <vector>
 
+const int WINDOW_WIDTH = 750;
+const int WINDOW_HEIGHT = 750;
+
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
@@ -54,19 +57,25 @@ public:
     friend class ApplicationComponentConstructor;
     
 private:
+    bool checkDeviceExtensionSupport(const VkPhysicalDevice* device) const;
+    
     bool checkLayerValidationSupport() const;
+    
+    bool isDeviceSuitable(VkPhysicalDevice const device, VkSurfaceKHR* const surface) const;
     
     std::vector<const char*> getRequiredExtensions(const bool &enableValidationLayers) const;
     
-    QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice &device, const VkSurfaceKHR &surface);
+    QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice &device, const VkSurfaceKHR &surface) const;
     
-    SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice &device, const VkSurfaceKHR &surface);
+    SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice &device, const VkSurfaceKHR &surface) const;
     
-    VkExtent2D chooseSwapSurfaceExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+    VkPhysicalDevice pickPhysicalDevice(VkInstance* const instance, VkSurfaceKHR* const surface) const;
     
-    VkPresentModeKHR chooseSwapSurfacePresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
+    VkExtent2D chooseSwapSurfaceExtent(const VkSurfaceCapabilitiesKHR &capabilities) const;
     
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
+    VkPresentModeKHR chooseSwapSurfacePresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const;
+    
+    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) const;
 };
 
 #endif /* helper_hpp */

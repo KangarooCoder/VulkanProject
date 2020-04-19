@@ -30,8 +30,21 @@ private:
     ApplicationComponentConstructor componentConstructor;
     
     GLFWwindow* window;
+    VkSurfaceKHR* surface;
     
     VkInstance* instance;
+    VkDebugUtilsMessengerEXT* debugMessenger;
+    
+    VkPhysicalDevice physicalDevice;
+    VkDevice* device;
+    VkQueue* graphicsQueue;
+    
+    VkSwapchainKHR swapChain;
+    VkFormat swapChainFormat;
+    VkExtent2D swapChainExtent;
+    
+    std::vector<VkImage> swapChainImages;
+    std::vector<VkImageView> swapChainImageViews;
     
     // Start of init functions
     void initWindow();

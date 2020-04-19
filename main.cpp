@@ -23,16 +23,14 @@
 #include <algorithm>
 #include <fstream>
 
-#include "gameApplication.hpp"
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
 
-//#ifdef NDEBUG
-//    const bool enableValidationLayers = false;
-//#else
-//    const bool enableValidationLayers = true;
-//#endif
-//
-//const uint32_t WINDOW_WIDTH = 800;
-//const uint32_t WINDOW_HEIGHT = 600;
+const uint32_t WINDOW_WIDTH = 800;
+const uint32_t WINDOW_HEIGHT = 600;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 

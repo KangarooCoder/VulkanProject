@@ -11,10 +11,13 @@
 #ifndef componentConstructor_hpp
 #define componentConstructor_hpp
 
-#include <vulkan/vulkan.h>
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 
 #include <stdio.h>
 #include <vector>
+
+#include "helper.hpp"
 
 #ifdef NDEBUG
     const bool enableValidationLayers = false;
@@ -22,15 +25,15 @@
     const bool enableValidationLayers = true;
 #endif
 
-const int WINDOW_WIDTH = 750;
-const int WINDOW_HEIGHT = 750;
-
 class ApplicationComponentConstructor
 {
 public:
     friend class GameApplication;
     
 private:
+    // Instance of application helper to assist in information retrieval
+    ApplicationHelper helper;
+    
     // Start of static helper functions
     using VkDUMessageSeverity = VkDebugUtilsMessageSeverityFlagBitsEXT;
     using VkDUMessageType = VkDebugUtilsMessageTypeFlagsEXT;
@@ -45,15 +48,27 @@ private:
     VkInstance* createInstance() const;
     
     // DEBUG MESSENGER CREATION FUNCTIONS
+    VkResult CreateDebugeUtilsMessengerEXT(VkInstance* const instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) const;
+    
+    void DestroyDebugUtilsMessengerEXT(VkInstance* const instance, VkDebugUtilsMessengerEXT* const debugMessenger, const VkAllocationCallbacks* pAllocator) const;
+    
     VkDebugUtilsMessengerEXT* setupDebugMessenger(VkInstance* const instance) const;
     
     VkDebugUtilsMessengerCreateInfoEXT generateDebugMessengerCreateInfo() const;
     
     // SURFACE CREATION FUNCTIONS
-    VkSurfaceKHR* createSurface();
+    VkSurfaceKHR* createSurface(VkInstance* const instance, GLFWwindow* const window) const;
     
     // LOGICAL DEVICE CREATION FUNCTIONS
-    VkDevice* createLogicalDevice();
+    std::pair<VkDevice*, VkQueue*> createLogicalDevice(VkPhysicalDevice const &device, VkSurfaceKHR* const surface) const;
+    
+    // SWAPCHAIN CREATION FUNCTIONS
+    std::pair<VkSwapchainKHR, std::pair<VkFormat, VkExtent2D>> createSwapChain(VkPhysicalDevice const &physicalDevice, VkDevice* const device, VkSurfaceKHR* const surface) const;
+    
+    std::vector<VkImage> getSwapChainImages(VkDevice* const device, VkSwapchainKHR const swapChain) const;
+    
+    // IMAGE VIEW CREATION FUNCTIONS
+    std::vector<VkImageView> createImageViews(VkDevice* const device, std::vector<VkImage> &swapChainImages, VkFormat &format) const;
 };
 
 #endif /* componentConstructor_hpp */

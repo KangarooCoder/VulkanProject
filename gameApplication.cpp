@@ -33,6 +33,23 @@ void GameApplication::initVulkan()
     glfwSetErrorCallback(ErrorCallback);
     
     instance = componentConstructor.createInstance();
+    debugMessenger = componentConstructor.setupDebugMessenger(instance);
+    surface = componentConstructor.createSurface(instance, window);
+    physicalDevice = std::move(componentConstructor.helper.pickPhysicalDevice(instance, surface));
+
+    std::pair<VkDevice*, VkQueue*> deviceAndQueue = componentConstructor.createLogicalDevice(physicalDevice, surface);
+
+    device = deviceAndQueue.first;
+    graphicsQueue = deviceAndQueue.second;
+
+    std::pair<VkSwapchainKHR, std::pair<VkFormat, VkExtent2D>> swapChainAndInfo = componentConstructor.createSwapChain(physicalDevice, device, surface);
+
+    swapChain = swapChainAndInfo.first;
+    swapChainFormat = std::move(swapChainAndInfo.second.first);
+    swapChainExtent = std::move(swapChainAndInfo.second.second);
+
+    swapChainImages = componentConstructor.getSwapChainImages(device, swapChain);
+    swapChainImageViews = componentConstructor.createImageViews(device, swapChainImages, swapChainFormat);
 }
 
 void GameApplication::mainLoop() const
@@ -51,5 +68,32 @@ void GameApplication::drawFrame() const
 
 void GameApplication::cleanup()
 {
-    vkDestroyInstance(*instance, nullptr);
+    for (auto &imageView : swapChainImageViews)
+        vkDestroyImageView((*device), imageView, nullptr);
+    
+    std::vector<VkImageView>().swap(swapChainImageViews);
+    
+    vkDestroySwapchainKHR((*device), swapChain, nullptr);
+    
+    vkDestroyDevice((*device), nullptr);
+    delete device;
+    device = nullptr;
+    
+    if (enableValidationLayers)
+    {
+        componentConstructor.DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+        delete debugMessenger;
+        debugMessenger = nullptr;
+    }
+    
+    vkDestroySurfaceKHR((*instance), (*surface), nullptr);
+    delete surface;
+    surface = nullptr;
+    
+    vkDestroyInstance((*instance), nullptr);
+    delete instance;
+    instance = nullptr;
+    
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
